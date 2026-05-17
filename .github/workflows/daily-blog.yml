@@ -96,7 +96,9 @@ jobs:
         run: |
           git config user.name "Blog Bot"
           git config user.email "bot@freqtrade-daily.blog"
-          git add _posts/ assets/images/screenshots/ state/
+          git add _posts/ 2>/dev/null || true
+          git add assets/images/screenshots/ 2>/dev/null || true
+          git add state/
           git diff --staged --quiet || git commit -m "Add blog post for $(date +%Y-%m-%d)"
           git push
 
