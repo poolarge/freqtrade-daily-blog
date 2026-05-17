@@ -1,0 +1,42 @@
+title: "Freqtrade 每日博客"
+description: "每天一篇，深入解读 Freqtrade 量化交易框架的功能与用法"
+url: ""
+baseurl: "/freqtrade-daily-blog"
+lang: zh-CN
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+permalink: /:categories/:year/:month/:day/:title.html
+
+defaults:
+  - scope:
+      path: "_posts"
+      type: "posts"
+    values:
+      layout: "post"
+      lang: "zh"
+
+collections:
+  posts:
+    output: true
+
+sass:
+  style: compressed
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+exclude:
+  - scripts/
+  - prompts/
+  - state/
+  - requirements.txt
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor/

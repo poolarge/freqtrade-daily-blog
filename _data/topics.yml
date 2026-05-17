@@ -1,0 +1,51 @@
+topics:
+  - slug: quickstart
+    title_zh: "Freqtrade 快速入门"
+  - slug: installation
+    title_zh: "安装与部署"
+  - slug: configuration
+    title_zh: "配置文件详解"
+  - slug: strategy-quickstart
+    title_zh: "策略开发入门"
+  - slug: strategy-customization
+    title_zh: "策略自定义进阶"
+  - slug: strategy-callbacks
+    title_zh: "策略回调函数"
+  - slug: stoploss
+    title_zh: "止损机制"
+  - slug: plugins
+    title_zh: "插件系统"
+  - slug: bot-operation
+    title_zh: "机器人运行与管理"
+  - slug: telegram-control
+    title_zh: "Telegram 远程控制"
+  - slug: frequi
+    title_zh: "FreqUI 可视化界面"
+  - slug: rest-api
+    title_zh: "REST API 接口"
+  - slug: data-downloading
+    title_zh: "历史数据下载"
+  - slug: backtesting
+    title_zh: "回测系统"
+  - slug: hyperopt
+    title_zh: "参数优化"
+  - slug: short-leverage
+    title_zh: "做空与杠杆"
+  - slug: plotting
+    title_zh: "数据可视化"
+  - slug: exchange-specific
+    title_zh: "交易所适配"
+  - slug: freqai-intro
+    title_zh: "FreqAI 机器学习入门"
+  - slug: freqai-configuration
+    title_zh: "FreqAI 配置与运行"
+  - slug: producer-consumer
+    title_zh: "多实例协作模式"
+  - slug: utility-commands
+    title_zh: "实用子命令"
+  - slug: advanced-strategy
+    title_zh: "高级策略技巧"
+  - slug: faq
+    title_zh: "常见问题解答"
+  - slug: updating-migration
+    title_zh: "版本更新与迁移"

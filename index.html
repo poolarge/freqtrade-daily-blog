@@ -1,0 +1,19 @@
+---
+layout: default
+title: "Freqtrade 每日博客"
+---
+
+<div class="hero">
+  <h1>Freqtrade 每日博客</h1>
+  <p>每天一篇，深入解读 Freqtrade 量化交易框架的功能与用法</p>
+</div>
+
+<div class="post-list">
+{% for post in site.posts %}
+  <article class="post-card">
+    <h2><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h2>
+    <time>{{ post.date | date: "%Y年%m月%d日" }}</time>
+    <p>{{ post.description }}</p>
+  </article>
+{% endfor %}
+</div>

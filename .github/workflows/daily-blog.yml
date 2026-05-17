@@ -1,0 +1,125 @@
+name: Daily Blog Post Generator
+
+on:
+  schedule:
+    - cron: '7 6 * * *'
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Override topic slug (optional)'
+        required: false
+        type: string
+      skip_api:
+        description: 'Skip Claude API calls (use raw doc)'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  generate-post:
+    runs-on: ubuntu-latest
+
+    env:
+      ANTHROPIC_BASE_URL: ${{ secrets.ANTHROPIC_BASE_URL }}
+      ANTHROPIC_AUTH_TOKEN: ${{ secrets.ANTHROPIC_AUTH_TOKEN }}
+      FT_BLOG_MODEL: ${{ vars.FT_BLOG_MODEL || 'astron-code-latest' }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}
+          restore-keys: playwright-chromium-
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Create demo project for screenshots
+        run: |
+          mkdir -p /tmp/demo-project
+          cd /tmp/demo-project
+          git init
+          git config user.name "Demo" && git config user.email "demo@example.com"
+          cat > config.json << 'JSONEOF'
+          {
+              "trading_mode": "spot",
+              "stake_currency": "USDT",
+              "dry_run": true,
+              "exchange": {
+                  "name": "gate",
+                  "pair_whitelist": ["QKA/USDT"]
+              }
+          }
+          JSONEOF
+          git add -A
+          git commit -m "Initial commit"
+
+      - name: Generate blog post
+        run: |
+          EXTRA_ARGS=""
+          if [ "${{ github.event.inputs.skip_api }}" = "true" ]; then
+            EXTRA_ARGS="--skip-api"
+          fi
+          python scripts/generate_post.py --topic "${{ github.event.inputs.topic || '' }}" $EXTRA_ARGS
+
+      - name: Commit and push new post
+        run: |
+          git config user.name "Blog Bot"
+          git config user.email "bot@freqtrade-daily.blog"
+          git add _posts/ assets/images/screenshots/ state/
+          git diff --staged --quiet || git commit -m "Add blog post for $(date +%Y-%m-%d)"
+          git push
+
+      - name: Notify Telegram
+        if: success()
+        run: python scripts/telegram_notify.py
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build Jekyll
+        uses: actions/jekyll-build-pages@v1
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: generate-post
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
